@@ -7,7 +7,7 @@ resource "aws_lb_target_group" "frontend" {
 
   health_check {
     healthy_threshold = 2
-    interval = 5
+    interval = 7
     matcher = "200-299"
     path = "/"
     port = 80
