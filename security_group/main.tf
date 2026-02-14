@@ -1,5 +1,5 @@
 module "openvpn" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "openvpn"
@@ -18,6 +18,119 @@ resource "aws_security_group_rule" "openvpn" {
     
 }
 
+module "bastion" {
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
+    project = var.project
+    environment = var.environment
+    sg_name = "bastion"
+    sg_des = "creating sg for bastion"
+    vpc_id = local.vpc_id
+}
+resource "aws_security_group_rule" "bastion_mongodb" {
+    count            = length(var.mongodb_ports)
+    type             = "ingress"
+    from_port        = var.mongodb_ports[count.index]
+    to_port          = var.mongodb_ports[count.index]
+    protocol         = "tcp"
+    source_security_group_id = module.bastion.sg_id
+    security_group_id = module.mongodb.sg_id
+    
+}
+resource "aws_security_group_rule" "bastion_redis" {
+    count            = length(var.redis_ports)
+    type             = "ingress"
+    from_port        = var.redis_port[count.index]
+    to_port          = var.redis_port[count.index]
+    protocol         = "tcp"
+    source_security_group_id = module.bastion.sg_id
+    security_group_id = module.redis.sg_id
+    
+}
+resource "aws_security_group_rule" "bastion_mysql" {
+    count            = length(var.mysql_ports)
+    type             = "ingress"
+    from_port        = var.mysql_port[count.index]
+    to_port          = var.mysql_port[count.index]
+    protocol         = "tcp"
+    source_security_group_id = module.bastion.sg_id
+    security_group_id = module.mysql.sg_id
+    
+}
+
+resource "aws_security_group_rule" "bastion_rabbitmq" {
+    count            = length(var.rabbitmq_ports)
+    type             = "ingress"
+    from_port        = var.rabbitmq_port[count.index]
+    to_port          = var.rabbitmq_port[count.index]
+    protocol         = "tcp"
+    source_security_group_id = module.bastion.sg_id
+    security_group_id = module.rabbitmq.sg_id
+    
+}
+resource "aws_security_group_rule" "bastion_catalogue_http" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id
+  security_group_id = module.catalogue.sg_id
+}
+resource "aws_security_group_rule" "bastion_user_http" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id
+  security_group_id = module.user.sg_id
+}
+resource "aws_security_group_rule" "bastion_cart_http" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id
+  security_group_id = module.cart.sg_id
+}
+resource "aws_security_group_rule" "bastion_shipping_http" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id
+  security_group_id = module.shipping.sg_id
+}
+resource "aws_security_group_rule" "bastion_payment_http" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id
+  security_group_id = module.payment.sg_id
+}
+resource "aws_security_group_rule" "bastion_backend_alb" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id
+  security_group_id = module.backend_alb.sg_id
+}
+resource "aws_security_group_rule" "bastion_frontend" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.bastion.sg_id
+  security_group_id = module.frontend.sg_id
+}
+resource "aws_security_group_rule" "bastion_laptop" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = module.bastion.sg_id
+}
 module "mongodb" {
     source = "../../security-group-module"
     project = var.project
@@ -48,7 +161,7 @@ resource "aws_security_group_rule" "vpn_mongodb" {
 
 
 module "redis" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "redis"
@@ -86,7 +199,7 @@ resource "aws_security_group_rule" "user_redis" {
 
 
 module "mysql" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "mysql"
@@ -124,7 +237,7 @@ resource "aws_security_group_rule" "shipping_mysql" {
 
 
 module "rabbitmq" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "rabbitmq"
@@ -162,7 +275,7 @@ resource "aws_security_group_rule" "payment_rabbitmq" {
 
 
 module "backend_alb" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "backend_alb"
@@ -229,7 +342,7 @@ resource "aws_security_group_rule" "payment_backend_alb" {
 
 
 module "catalogue" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "catalogue"
@@ -279,7 +392,7 @@ resource "aws_security_group_rule" "catalogue_vpn_http" {
 }
 
 module "frontend_alb" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "frontend_alb"
@@ -307,7 +420,7 @@ resource "aws_security_group_rule" "frontend_alb_https" {
 }
 
 module "user" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "user"
@@ -355,7 +468,7 @@ resource "aws_security_group_rule" "vpn_http_user" {
 }
 
 module "cart" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "cart"
@@ -401,7 +514,7 @@ resource "aws_security_group_rule" "backend_alb_cart" {
 }
 
 module "shipping" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "shipping"
@@ -440,7 +553,7 @@ resource "aws_security_group_rule" "backend_alb_shipping" {
 
 
 module "payment" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "payment"
@@ -486,7 +599,7 @@ resource "aws_security_group_rule" "backend_alb_payment" {
 }
 
 module "frontend" {
-    source = "../../security-group-module"
+    source = "git::https://github.com/SRINUNAIK208/security-group-module.git?ref=main"
     project = var.project
     environment = var.environment
     sg_name = "frontend"
