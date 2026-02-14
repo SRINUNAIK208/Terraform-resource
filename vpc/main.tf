@@ -1,5 +1,5 @@
 module "vpc" {
-    source = "../../vpc-module"
+    source = "git::https://github.com/SRINUNAIK208/vpc-module.git?ref=main"
     project = var.project
     environment = var.environment
     public_subnet_cidr = var.public_subnet_cidr
