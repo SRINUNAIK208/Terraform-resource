@@ -39,8 +39,8 @@ resource "aws_security_group_rule" "bastion_mongodb" {
 resource "aws_security_group_rule" "bastion_redis" {
     count            = length(var.redis_ports)
     type             = "ingress"
-    from_port        = var.redis_port[count.index]
-    to_port          = var.redis_port[count.index]
+    from_port        = var.redis_ports[count.index]
+    to_port          = var.redis_ports[count.index]
     protocol         = "tcp"
     source_security_group_id = module.bastion.sg_id
     security_group_id = module.redis.sg_id
@@ -49,8 +49,8 @@ resource "aws_security_group_rule" "bastion_redis" {
 resource "aws_security_group_rule" "bastion_mysql" {
     count            = length(var.mysql_ports)
     type             = "ingress"
-    from_port        = var.mysql_port[count.index]
-    to_port          = var.mysql_port[count.index]
+    from_port        = var.mysql_ports[count.index]
+    to_port          = var.mysql_ports[count.index]
     protocol         = "tcp"
     source_security_group_id = module.bastion.sg_id
     security_group_id = module.mysql.sg_id
@@ -60,8 +60,8 @@ resource "aws_security_group_rule" "bastion_mysql" {
 resource "aws_security_group_rule" "bastion_rabbitmq" {
     count            = length(var.rabbitmq_ports)
     type             = "ingress"
-    from_port        = var.rabbitmq_port[count.index]
-    to_port          = var.rabbitmq_port[count.index]
+    from_port        = var.rabbitmq_ports[count.index]
+    to_port          = var.rabbitmq_ports[count.index]
     protocol         = "tcp"
     source_security_group_id = module.bastion.sg_id
     security_group_id = module.rabbitmq.sg_id
